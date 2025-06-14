@@ -1,11 +1,25 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { auth } from '@/lib/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { showError, showSuccess } from '@/lib/toast';
 import LoadingAnimation from '@/components/LoadingAnimation';
 import { isValidEmail } from '@/lib/validators';
 
 const Register = () => {
+    const { user, loading } = useAuth();
+    const { push } = useRouter();
+
+    useEffect(() => {
+        if (!loading && user) {
+            push('/dashboard');
+        }
+    }, [user, loading, push]);
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordValid, setPasswordValid] = useState(true);
@@ -49,6 +63,8 @@ const Register = () => {
     }
 
     const handleRegister = (e: React.FormEvent) => {
+        e.preventDefault();
+
         if (!isValidEmail(email)) {
             setEmailValidationError(true);
             return;
@@ -59,80 +75,89 @@ const Register = () => {
             return;
         }
 
-        // implement registration
+        setIsSubmitting(true);
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                showSuccess('Account created!');
+                push('/dashboard');
+            })
+            .catch((error) => showError(error.message || 'Failed to register'))
+            .finally(() => setIsSubmitting(false));
     }
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
-            <div className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-md space-y-6">
-                <h2 className="text-2xl font-semibold text-center">Create Account</h2>
+            {loading || isSubmitting ? <LoadingAnimation overlay={false} size={100} className="my-6" /> :
+                <div className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-md space-y-6">
+                    <h2 className="text-2xl font-semibold text-center">Create Account</h2>
 
-                <div>
-                    <label htmlFor="email" className={getInputClass.emailLabel}>
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onBlur={() => handleBlur('email')}
-                        className={getInputClass.emailInput}
-                        aria-invalid={emailValidationError}
-                    />
-                </div>
+                    <div>
+                        <label htmlFor="email" className={getInputClass.emailLabel}>
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            onBlur={() => handleBlur('email')}
+                            className={getInputClass.emailInput}
+                            aria-invalid={emailValidationError}
+                        />
+                    </div>
 
-                <div>
-                    <label htmlFor="password" className={getInputClass.passwordLabel}>
-                        Password
-                    </label>
-                    <input
-                        id="password"
-                        type="password"
-                        required
-                        value={password}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            setPassword(value);
-                            setPasswordValid(value.length >= 6);
-                        }}
-                        onBlur={() => handleBlur('password')}
-                        className={getInputClass.passwordInput}
-                    />
-                    <p className={`text-sm mt-1 px-2 ${passwordValid ? 'text-green-600' : 'text-rose-600'}`}>
-                        {passwordValid ? 'Minimum 6 characters' : 'Password must be at least 6 characters'}
+                    <div>
+                        <label htmlFor="password" className={getInputClass.passwordLabel}>
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            required
+                            value={password}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setPassword(value);
+                                setPasswordValid(value.length >= 6);
+                            }}
+                            onBlur={() => handleBlur('password')}
+                            className={getInputClass.passwordInput}
+                        />
+                        <p className={`text-sm mt-1 px-2 ${passwordValid ? 'text-green-600' : 'text-rose-600'}`}>
+                            {passwordValid ? 'Minimum 6 characters' : 'Password must be at least 6 characters'}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label htmlFor="passwordConfirm" className={getInputClass.passwordLabel}>
+                            Password Confirmation
+                        </label>
+                        <input
+                            id="passwordConfirm"
+                            type="password"
+                            required
+                            value={passwordConfirm}
+                            onChange={(e) => setPasswordConfirm(e.target.value)}
+                            onBlur={() => handleBlur('confirm')}
+                            className={getInputClass.passwordInput}
+                            aria-invalid={passwordConfirmError}
+                        />
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleRegister}
+                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
+                    >
+                        Register
+                    </button>
+
+                    <p className="text-center text-sm text-gray-500">
+                        Already have an account? <a href="/signIn" className="text-blue-600 underline">Sign in</a>
                     </p>
                 </div>
-
-                <div>
-                    <label htmlFor="passwordConfirm" className={getInputClass.passwordLabel}>
-                        Password Confirmation
-                    </label>
-                    <input
-                        id="passwordConfirm"
-                        type="password"
-                        required
-                        value={passwordConfirm}
-                        onChange={(e) => setPasswordConfirm(e.target.value)}
-                        onBlur={() => handleBlur('confirm')}
-                        className={getInputClass.passwordInput}
-                        aria-invalid={passwordConfirmError}
-                    />
-                </div>
-
-                <button
-                    type="button"
-                    onClick={handleRegister}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
-                >
-                    Register
-                </button>
-
-                <p className="text-center text-sm text-gray-500">
-                    Already have an account? <a href="/signIn" className="text-blue-600 underline">Sign in</a>
-                </p>
-            </div>
+            }
         </div>
     );
 }
