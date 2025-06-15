@@ -1,12 +1,17 @@
-export default {
+import type { Config } from 'jest';
+
+const config: Config = {
+  preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest',
-  },
   moduleNameMapper: {
-    '^@/components/(.*)$': '<rootDir>/src/components/$1',
-    '^@/context/(.*)$': '<rootDir>/src/context/$1',
-    '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
-  setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  testMatch: ['**/__tests__/**/*.(test|spec).(ts|tsx)'],
+  transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest',
+  },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };
+
+export default config;
