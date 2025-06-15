@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect, useState, useCallback } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@context/AuthContext';
 import LoadingAnimation from './LoadingAnimation';
@@ -11,46 +11,20 @@ type AuthGuardProps = {
 };
 
 const AuthGuard = ({ children, requireAdmin = false }: AuthGuardProps) => {
-  const { user, loading } = useAuth();
+  const { user, loading, isInitialized, isAdmin } = useAuth();
   const { push } = useRouter();
-  const [checkClaims, setCheckClaims] = useState(requireAdmin);
-
-  const verifyAdmin = useCallback(() => {
-    if (!user) {
-      return;
-    }
-
-    user
-      .getIdTokenResult()
-      .then((tokenResult) => {
-        const isAdmin = tokenResult.claims.admin === true;
-        if (!isAdmin) {
-          push('/unauthorized');
-        } else {
-          setCheckClaims(false);
-        }
-      })
-      .catch(() => {
-        push('/error');
-      });
-  }, [user, push]);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isInitialized) return;
+
+    if (!user) {
       push('/signIn');
-      return;
+    } else if (requireAdmin && !isAdmin) {
+      push('/unauthorized');
     }
+  }, [user, isInitialized, requireAdmin, isAdmin, push]);
 
-    if (!loading && user) {
-      if (!requireAdmin) {
-        setCheckClaims(false);
-      } else {
-        verifyAdmin();
-      }
-    }
-  }, [user, loading, requireAdmin]);
-
-  if (loading || checkClaims) {
+  if (loading || !isInitialized || (requireAdmin && !isAdmin && user)) {
     return <LoadingAnimation />;
   }
 
