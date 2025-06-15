@@ -11,14 +11,14 @@ import FormInput from '@/components/ui/FromInput';
 import { isValidEmail } from '@/lib/validators';
 
 const Register = () => {
-    const { user, loading } = useAuth();
+    const { user, isInitialized } = useAuth();
     const { push } = useRouter();
 
     useEffect(() => {
-        if (!loading && user) {
+        if (isInitialized && user) {
             push('/dashboard');
         }
-    }, [user, loading, push]);
+    }, [user, isInitialized, push]);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [email, setEmail] = useState('');
@@ -68,7 +68,7 @@ const handleBlur = (input: 'password' | 'confirm' | 'email') => {
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
-            {loading || isSubmitting ? <LoadingAnimation overlay={false} size={100} className="my-6" /> :
+            {!isInitialized || isSubmitting ? <LoadingAnimation overlay={false} size={100} className="my-6" /> :
                 <div className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-md space-y-6">
                     <h2 className="text-2xl font-semibold text-center">Create Account</h2>
 
