@@ -7,6 +7,7 @@ import { auth } from '@/lib/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { showError, showSuccess } from '@/lib/toast';
 import LoadingAnimation from '@/components/LoadingAnimation';
+import FormInput from '@/components/ui/FromInput';
 import { isValidEmail } from '@/lib/validators';
 
 const Register = () => {
@@ -27,42 +28,21 @@ const Register = () => {
     const [passwordConfirmError, setPasswordConfirmError] = useState(false);
     const [emailValidationError, setEmailValidationError] = useState(false);
 
-    const getInputClass = useMemo(() => {
-        const baseClass = 'w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring';
-        return {
-            emailLabel: `block text-sm mb-1 font-medium ${emailValidationError ? 'text-rose-600 animate-bounce' : 'text-gray-600'}`,
-            emailInput: `${baseClass} ${emailValidationError ? 'border-rose-600 focus:ring-rose-600' : 'border-gray-300 focus:ring-blue-500'}`,
-            passwordLabel: `block text-sm mb-1 font-medium ${passwordConfirmError ? 'text-rose-600 animate-bounce' : 'text-gray-600'}`,
-            passwordInput: `${baseClass} ${passwordConfirmError ? 'border-rose-600 focus:ring-rose-600' : 'border-gray-300 focus:ring-blue-500'}`,
-        };
-    }, [passwordConfirmError, emailValidationError]);
 
-    const handleBlur = (input: string) => {
-        if (input === 'password') {
-            if (password && password.length > 5) {
-                setPasswordConfirmError(false);
-            }
-        }
+const handleBlur = (input: 'password' | 'confirm' | 'email') => {
+  if (input === 'password') {
+    setPasswordValid(password.length >= 6);
+  }
+  if (input === 'confirm') {
+    setPasswordConfirmError(password !== passwordConfirm);
+  }
+  if (input === 'email') {
+    setEmailValidationError(!isValidEmail(email));
+  }
+};
 
-        if (input === 'confirm') {
-            if (password && (password === passwordConfirm)) {
-                setPasswordConfirmError(false);
-            } else {
-                setPasswordConfirmError(true);
-            }
-        }
 
-        if (input === 'email') {
-            if (isValidEmail(email)) {
-                setEmailValidationError(false);
-            } else {
-                setEmailValidationError(true);
-            }
-        }
-
-    }
-
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         if (!isValidEmail(email)) {
@@ -83,6 +63,7 @@ const Register = () => {
             })
             .catch((error) => showError(error.message || 'Failed to register'))
             .finally(() => setIsSubmitting(false));
+        // @todo - send user to update profile with name, account and phonenumber
     }
 
     return (
@@ -91,70 +72,64 @@ const Register = () => {
                 <div className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-md space-y-6">
                     <h2 className="text-2xl font-semibold text-center">Create Account</h2>
 
-                    <div>
-                        <label htmlFor="email" className={getInputClass.emailLabel}>
-                            Email
-                        </label>
-                        <input
-                            id="email"
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            onBlur={() => handleBlur('email')}
-                            className={getInputClass.emailInput}
-                            aria-invalid={emailValidationError}
-                        />
-                    </div>
+                    <FormInput
+                        id="email"
+                        type="email"
+                        label="Email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onBlur={() => handleBlur('email')}
+                        error={emailValidationError}
+                        autoComplete="email"
+                    />
 
-                    <div>
-                        <label htmlFor="password" className={getInputClass.passwordLabel}>
-                            Password
-                        </label>
-                        <input
-                            id="password"
-                            type="password"
-                            required
-                            value={password}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setPassword(value);
-                                setPasswordValid(value.length >= 6);
-                            }}
-                            onBlur={() => handleBlur('password')}
-                            className={getInputClass.passwordInput}
-                        />
-                        <p className={`text-sm mt-1 px-2 ${passwordValid ? 'text-green-600' : 'text-rose-600'}`}>
-                            {passwordValid ? 'Minimum 6 characters' : 'Password must be at least 6 characters'}
-                        </p>
-                    </div>
+                    <FormInput
+                        id="password"
+                        type="password"
+                        label='Password'
+                        required
+                        value={password}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setPassword(value);
+                            setPasswordValid(value.length >= 6);
+                        }}
+                        onBlur={() => handleBlur('password')}
+                        error={!passwordValid}
+                        helperText={
+                            password.length > 0
+                                ? passwordValid
+                                    ? 'Minimum 6 characters'
+                                    : 'Password must be at least 6 characters'
+                                : undefined
+                        }
+                        autoComplete="new-password"
+                    />
 
-                    <div>
-                        <label htmlFor="passwordConfirm" className={getInputClass.passwordLabel}>
-                            Password Confirmation
-                        </label>
-                        <input
-                            id="passwordConfirm"
-                            type="password"
-                            required
-                            value={passwordConfirm}
-                            onChange={(e) => setPasswordConfirm(e.target.value)}
-                            onBlur={() => handleBlur('confirm')}
-                            className={getInputClass.passwordInput}
-                            aria-invalid={passwordConfirmError}
-                        />
-                    </div>
+                    <FormInput
+                        id="passwordConfirm"
+                        type="password"
+                        label='Password Confirmation'
+                        required
+                        value={passwordConfirm}
+                        onChange={(e) => setPasswordConfirm(e.target.value)}
+                        onBlur={() => handleBlur('confirm')}
+                        error={passwordConfirmError}
+                        autoComplete="new-password"
+                    />
 
                     <button
                         type="button"
                         onClick={handleRegister}
+                        disabled={isSubmitting}
                         className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
                     >
                         Register
                     </button>
 
                     <p className="text-center text-sm text-gray-500">
-                        Already have an account? <a href="/signIn" className="text-blue-600 underline">Sign in</a>
+                        Already have an account? <button type="button" className="text-blue-600 underline cursor-pointer" onClick={() => push('/signIn')}>Sign in</button>
                     </p>
                 </div>
             }
