@@ -98,7 +98,7 @@ const SignIn = () => {
             type="button"
             onClick={handleSignIn}
             disabled={isSubmitting}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             Sign In
           </button>
@@ -111,6 +111,15 @@ const SignIn = () => {
               onClick={() => push('/register')}
             >
               Create Account
+            </button>
+          </p>
+          <p className="text-center text-sm text-gray-500">
+            <button
+              type="button"
+              className="text-blue-600 underline cursor-pointer"
+              onClick={() => push('/signIn/forgot')}
+            >
+              Forgot your password?
             </button>
           </p>
         </div>
