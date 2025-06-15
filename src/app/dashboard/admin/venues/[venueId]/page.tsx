@@ -14,12 +14,13 @@ const VenueDetailsPage = () => {
   useEffect(() => {
     if (venueId) {
       // TODO: Fetch venue details here
-      setLoading(false);
+      setTimeout(()=> setLoading(false), 2000)
+      
     }
   }, [venueId]);
 
   if (loading) {
-    return <LoadingAnimation />;
+    return <LoadingAnimation overlay centered avoidFixed />;
   }
 
   return (

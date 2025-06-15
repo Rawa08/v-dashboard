@@ -8,11 +8,19 @@ type Props = {
   size?: number;
   overlay?: boolean;
   centered?: boolean;
+  avoidFixed?: boolean;
 };
 
-const LoadingAnimation = ({ className, size = 150, overlay = true, centered = true }: Props) => {
+const LoadingAnimation = ({
+  className,
+  size = 150,
+  overlay = true,
+  centered = true,
+  avoidFixed = false,
+}: Props) => {
   const baseClasses = [
-    overlay ? 'fixed inset-0 z-50 bg-black bg-opacity-50' : '',
+    overlay ? (avoidFixed ? 'absolute inset-0' : 'fixed inset-0 z-50') : '',
+    overlay ? 'bg-gray-100 bg-opacity-50' : '',
     centered ? 'flex items-center justify-center' : '',
     className ?? '',
   ]
