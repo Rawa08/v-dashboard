@@ -10,7 +10,11 @@ interface AuthContextType {
   isInitialized: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true, isInitialized: false });
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  isInitialized: false,
+});
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -27,7 +31,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  return <AuthContext.Provider value={{ user, loading, isInitialized }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, loading, isInitialized }}>{children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

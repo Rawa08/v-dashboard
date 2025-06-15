@@ -3,7 +3,7 @@ type Props = {
     type?: string;
     label: string;
     value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: () => void;
     error?: boolean;
     helperText?: string;

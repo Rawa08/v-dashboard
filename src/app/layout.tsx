@@ -7,7 +7,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => (
   <html lang="en">
     <body>
       <AuthProvider>{children}</AuthProvider>
-       <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
     </body>
   </html>
 );
