@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [showSidebar, setShowSidebar] = useState(false);
 
   const handleNavClick = () => {
-    if(showSidebar){
+    if (showSidebar) {
       setShowSidebar(false);
     }
   };
@@ -32,7 +32,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/dashboard/admin/venues" onClick={handleNavClick} className="hover:underline">Venues</Link>
         </>
       ) : (
-        <Link href="/dashboard/venue" onClick={handleNavClick} className="hover:underline">My Venue</Link>
+        <>
+          <Link href="/dashboard/venue" onClick={handleNavClick} className="hover:underline">My Venue</Link>
+          <Link href="/dashboard/venue/upload" className="hover:underline">Upload Media</Link>
+        </>
       )}
     </>
   );
