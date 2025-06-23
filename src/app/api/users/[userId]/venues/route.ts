@@ -87,46 +87,44 @@ const mockVenue: Venue = {
     },
 };
 
+export const GET = () => (NextResponse.json(mockVenue));
 
-export const GET = async (
-    req: Request,
-    context: { params: Promise<{ userId: string }> }
-) => {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVICES_BASE_URL;
-    const { userId } = await context.params;
+// export const GET = async (
+//     req: Request,
+//     context: { params: Promise<{ userId: string }> }
+// ) => {
+//     const baseUrl = process.env.NEXT_PUBLIC_SERVICES_BASE_URL;
+//     const { userId } = await context.params;
 
-    // if (!baseUrl) {
-    //     console.error('Missing NEXT_PUBLIC_SERVICES_BASE_URL');
-    //     return NextResponse.json(
-    //         { error: 'Server configuration error' },
-    //         { status: 500 }
-    //     );
-    // }
+//     if (!baseUrl) {
+//         console.error('Missing NEXT_PUBLIC_SERVICES_BASE_URL');
+//         return NextResponse.json(
+//             { error: 'Server configuration error' },
+//             { status: 500 }
+//         );
+//     }
 
-    // try {
-    //     const response = await fetch(`${baseUrl}/api/users/${userId}/venues`);
+//     try {
+//         const response = await fetch(`${baseUrl}/api/users/${userId}/venues`);
 
-    //     if (!response.ok) {
-    //         const text = await response.text();
-    //         console.error('Backend error:', response.status, text);
-    //         return NextResponse.json(
-    //             { error: 'Could not fetch venues', details: text },
-    //             { status: response.status }
-    //         );
-    //     }
+//         if (!response.ok) {
+//             const text = await response.text();
+//             console.error('Backend error:', response.status, text);
+//             return NextResponse.json(
+//                 { error: 'Could not fetch venues', details: text },
+//                 { status: response.status }
+//             );
+//         }
 
-    //     const payload = await response.json();
+//         const payload = await response.json();
 
-    //     return NextResponse.json(payload);
-    // } catch (err: any) {
-    //     console.error('Fetch failed:', err);
-    //     return NextResponse.json(
-    //         { error: 'Internal server error' },
-    //         { status: 500 }
-    //     );
-    // }
-
-
-    return NextResponse.json(mockVenue);
-};
+//         return NextResponse.json(payload);
+//     } catch (err: any) {
+//         console.error('Fetch failed:', err);
+//         return NextResponse.json(
+//             { error: 'Internal server error' },
+//             { status: 500 }
+//         );
+//     }
+// };
 
