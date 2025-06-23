@@ -10,6 +10,40 @@ import unusedImportsPlugin from 'eslint-plugin-unused-imports';
 /** @type {import('eslint').FlatConfig[]} */
 export default [
   js.configs.recommended,
+
+  // Jest files override
+  {
+    files: [
+      '**/__tests__/**/*.{ts,tsx,js,jsx}',
+      '**/?(*.)+(spec|test).{ts,tsx,js,jsx}',
+    ],
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
+    },
+    rules: {
+    },
+  },
+
+  // types folder override
+  {
+    files: ['./src/types/**/*.{ts,tsx}'],
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+
+  // main config
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
@@ -25,10 +59,12 @@ export default [
       globals: {
         process: 'readonly',
         __dirname: 'readonly',
+        fetch: 'readonly',
+        console: 'readonly',
         window: 'readonly',
         document: 'readonly',
         navigator: 'readonly',
-        React: true
+        React: true,
       },
     },
     plugins: {
@@ -51,7 +87,8 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
       'unused-imports/no-unused-imports': 'warn',
-      'no-unused-vars': [
+      'no-unused-vars': 'off',
+      '@/no-unused-vars': [
         'error',
         {
           varsIgnorePattern: '^_',
