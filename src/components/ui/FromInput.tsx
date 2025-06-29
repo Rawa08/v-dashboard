@@ -28,7 +28,7 @@ const FormInput = ({
         ? 'border-rose-600 focus:ring-rose-600'
         : 'border-gray-300 focus:ring-blue-500';
 
-    const labelClass = `block text-sm mb-1 font-medium ${error ? 'text-rose-600 animate-bounce' : 'text-gray-600'
+    const labelClass = `block text-sm mb-1 font-medium ${error ? 'text-rose-600' : 'text-gray-600'
         }`;
     return (
         <div>
