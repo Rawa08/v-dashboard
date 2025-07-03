@@ -9,6 +9,7 @@ import { showError, showSuccess } from '@/lib/toast';
 import LoadingAnimation from '@/components/LoadingAnimation';
 import FormInput from '@/components/ui/FromInput';
 import { isValidEmail, isPhoneValid } from '@/lib/validators';
+import fetchWithAuth from '@/lib/fetchWithAuth';
 
 const Register = () => {
   const { user, isInitialized } = useAuth();
@@ -63,6 +64,19 @@ const Register = () => {
     }
   };
 
+  const handleUserRegistration = (fireBaseUid: string): void => {
+    fetchWithAuth('/api/users/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        firebaseUid: fireBaseUid,
+        firstName,
+        lastName,
+        phoneNumber,
+        email,
+      }),
+    });
+  };
+
   const handleRegister = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
@@ -78,13 +92,13 @@ const Register = () => {
 
     setIsSubmitting(true);
     createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
+      .then(({ user }) => {
+        handleUserRegistration(user.uid);
         showSuccess('Account created!');
         push('/dashboard');
       })
       .catch((error) => showError(error.message || 'Failed to register'))
       .finally(() => setIsSubmitting(false));
-    // @todo - send user to update profile with name, account and phonenumber
   };
 
   return (
@@ -146,7 +160,7 @@ const Register = () => {
             error={!passwordValid}
             helperText={
               password.length > 0 ? 'Minimum 6 characters'
-                  : 'Password must be at least 6 characters'
+                : 'Password must be at least 6 characters'
             }
             autoComplete="new-password"
           />
