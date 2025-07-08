@@ -29,10 +29,12 @@ export type PlayListsByCategory =
 export type Venue = {
   id: string,
   name: string,
-  city?: string,
-  address?: string,
-  phone?: string,
-  managerEmail?: string[],
-  devices: number,
-  playLists: PlayListsByCategory,
+  phone: string,
+  postalAddress: string,
+  postalCode: string,
+  city: string,
+  country: string,
+  venuePlaylistManagers?: string[],
+  _count: number,
+  playlists: PlayListsByCategory,
 };
