@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast';
 
 const RootLayout = ({ children }: { children: ReactNode }) => (
   <html lang="en">
-    <body>
+    <body suppressHydrationWarning>
       <AuthProvider>{children}</AuthProvider>
       <Toaster position="top-center" reverseOrder={false} />
     </body>
