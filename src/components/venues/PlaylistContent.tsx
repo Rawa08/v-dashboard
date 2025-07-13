@@ -11,7 +11,6 @@ export type PlaylistContentProps = {
 };
 
 const PlaylistContent: React.FC<PlaylistContentProps> = ({ playlist, onUploadComplete }) => {
-
     const [files, setFiles] = useState<FileList | null>(null);
     const [uploading, setUploading] = useState(false);
 
@@ -46,14 +45,11 @@ const PlaylistContent: React.FC<PlaylistContentProps> = ({ playlist, onUploadCom
             setFiles(null);
         }
     };
+
     return (
         <div className="px-4 py-6">
-
-            <h2 className="text-2xl font-semibold mb-6">{playlist.category}</h2>
-
-
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {playlist.images.map((img) => (
+                {playlist.playlistImages?.map((img) => (
                     <div
                         key={img.id}
                         className="bg-white rounded-2xl overflow-hidden shadow-md aspect-square">
