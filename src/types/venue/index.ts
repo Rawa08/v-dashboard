@@ -1,8 +1,8 @@
 export enum PlayListNameEnum {
-  SPORTS = 'Sports',
-  EVENTS = 'Events',
-  SPECIALS = 'Specials',
-  MENU = 'Menue'
+  SPORTS = 'SPORTS',
+  EVENTS = 'EVENTS',
+  SPECIALS = 'SPECIALS',
+  MENU = 'MENU'
 }
 
 export type PlaylistImage = {
@@ -18,13 +18,17 @@ export type PlaylistImage = {
 export type PlayList = {
   category: PlayListNameEnum,
   id: string,
-  images: PlaylistImage[],
+  playlistImages: PlaylistImage[],
   createdAt: Date,
   createdByUserId: string,
 }
 
 export type PlayListsByCategory =
   Record<PlayListNameEnum, PlayList>;
+
+export type manager = {
+  user: { email: string; id: string; firstName?: string; LastName?: string; phone?: string }
+};
 
 export type Venue = {
   id: string,
@@ -34,7 +38,24 @@ export type Venue = {
   postalCode: string,
   city: string,
   country: string,
-  venuePlaylistManagers?: string[],
-  _count: number,
-  playlists: PlayListsByCategory,
+  startDate?: Date,
+  contactPersonId?: string,
+  updatedAt: Date,
+  createdAt: Date,
+  venuePlaylistManagers: manager[] | [],
+  _count: { devices: number },
+  playlists: PlayList[],
+};
+
+export type User = {
+  id: string;
+  firebaseUid: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  country: string | null;
+  isAdmin: boolean;
+  createdAt: string;
+  updatedAt: string;
 };
