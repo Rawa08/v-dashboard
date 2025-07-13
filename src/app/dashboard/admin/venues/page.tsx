@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { VenueCard } from '@/components/venues';
 import FormInput from '@/components/ui/FromInput';
 import fetchWithAuth from '@/lib/fetchWithAuth';
@@ -24,6 +26,7 @@ const VenuesPage = () => {
     const [form, setForm] = useState<NewVenue>({ name: '', phone: '', postalAddress: '', postalCode: '', city: '', country: '', startDate: '', contactPersonId: '' });
     const [showForm, setShowForm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const basePath = usePathname();
 
     const getAllVenues = useCallback(() => {
         setIsLoading(true);
@@ -72,11 +75,16 @@ const VenuesPage = () => {
         fetchWithAuth('/api/admin/createVenue', {
             method: 'POST',
             body: JSON.stringify({ ...payload }),
-        }).then(() => {
-            showSuccess('Created Venue');
-            getAllVenues();
-        }).catch(() => {
+        }).then((res) => {
+            if (res.ok) {
+                showSuccess('Created Venue');
+                getAllVenues();
+            } else {
+                throw res;
+            }
+        }).catch((_error) => {
             showError(`Failed to create venue`);
+            // Log error
         })
             .finally(() => {
                 setForm({ name: '', phone: '', postalAddress: '', postalCode: '', city: '', country: '', startDate: '', contactPersonId: '' });
@@ -184,7 +192,9 @@ const VenuesPage = () => {
 
             <ul className="space-y-2">
                 {venues.map((venue) => (
-                    <VenueCard key={venue.id} venue={venue} />
+                    <Link key={venue.id} href={`${basePath}/${venue.id}`}>
+                        <VenueCard venue={venue} />
+                    </Link>
                 ))}
             </ul>
         </div>
