@@ -6,13 +6,14 @@ export enum PlayListNameEnum {
 }
 
 export type PlaylistImage = {
-  id: string,
-  url: string,
-  playListId: string,
-  venueId?: string,
-  createdAt: Date,
-  createdByUserId: string,
-
+  image: {
+    id: string,
+    url: string,
+    playListId: string,
+    venueId?: string,
+    createdAt: Date,
+    createdByUserId: string,
+  }
 }
 
 export type PlayList = {
