@@ -106,7 +106,7 @@ const VenueDetailsPage = () => {
       {venue.playlists.map((pl) => (
         <div key={pl.id}>
           <p>{pl.category}</p>
-          <PlaylistContent playlist={pl} onUploadComplete={() => null} />
+          <PlaylistContent playlist={pl} onUploadComplete={() => fetchVenue()} />
         </div>
       ))}
     </div>

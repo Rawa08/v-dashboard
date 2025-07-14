@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import type { PlayList } from '@/types/venue';
 import { UploadCloud } from 'lucide-react';
 import { showError } from '@/lib/toast';
+import { getAuth } from 'firebase/auth';
 
 export type PlaylistContentProps = {
     playlist: PlayList;
@@ -13,11 +14,10 @@ export type PlaylistContentProps = {
 const PlaylistContent: React.FC<PlaylistContentProps> = ({ playlist, onUploadComplete }) => {
     const [files, setFiles] = useState<FileList | null>(null);
     const [uploading, setUploading] = useState(false);
-
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFiles(e.target.files);
     };
-
+    
     const handleUpload = async () => {
         if (!files || files.length === 0) {
             return;
@@ -27,18 +27,31 @@ const PlaylistContent: React.FC<PlaylistContentProps> = ({ playlist, onUploadCom
         for (let i = 0; i < files.length; i++) {
             formData.append('files', files[i]);
         }
-        formData.append('playListId', playlist.id);
+        formData.append('playlistId', playlist.id);
 
         setUploading(true);
-
         try {
+            const user = getAuth().currentUser;
+            if (!user) {
+                showError('No User');
+                return;
+            }
 
-            const res = await fetch('/api/venue/upload/imageUpload', { method: 'POST', body: formData });
+            const idToken = await user.getIdToken(false);
 
-            if (!res.ok) throw new Error('Upload failed');
 
+            const res = await fetch('/api/venue/upload/imageUpload', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${idToken}`,
+                },
+                body: formData,
+            });
+
+            if (!res.ok) throw new Error(await res.text());
             onUploadComplete();
         } catch (err) {
+            console.error(err);
             showError(`Failed to upload ${files.length} images`);
         } finally {
             setUploading(false);
@@ -49,13 +62,13 @@ const PlaylistContent: React.FC<PlaylistContentProps> = ({ playlist, onUploadCom
     return (
         <div className="px-4 py-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {playlist.playlistImages?.map((img) => (
+                {playlist.playlistImages?.map(({image}) => (
                     <div
-                        key={img.id}
+                        key={image.id}
                         className="bg-white rounded-2xl overflow-hidden shadow-md aspect-square">
                         <img
-                            src={img.url}
-                            alt={`Image ${img.id}`}
+                            src={image.url}
+                            alt={`Image ${image.id}`}
                             className="object-cover w-full h-full"
                         />
                     </div>
